@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+
+    <body>
+        
+        <script>
+            const teams = ["Reds" , "Greens" , "Blues" , "Purples"]; 
+            const gamesWon = [ 4 , 6, 7, 9 ];
+            const gamesTied = [ 2 , 1, 1 , 0];
+            const gamesLost = [ 3 , 2 , 1 , 0]; 
+            const goalsScored = [ 8 , 13 , 15 , 22  ];
+            const goalsRecieved = [10 , 12, 14, 12];
+          
+            function verify(gamesLost , gamesTied , gamesWon){
+                for (let i = 0; i <= 3; i++ ){
+                    
+                    let verifyVar = Number(gamesWon[i] + gamesLost[i] + gamesTied[i]);
+                    
+                    if(verifyVar == 9){
+                        
+                    }else{
+                        document.write("Game Count Impossible"); 
+                       let i = i + 10; 
+                       
+                    }
+
+                    
+                }
+            } 
+            verify(gamesLost , gamesTied, gamesWon);
+        </script>
+
+        <h1>Soccer Tournament Results</h1>
+        <h3> <script> 
+            var d = new Date();
+            document.write(d);
+        </script></h3> 
+
+        <h3> <b>Number of points per team</b> </h3>
+        <li>
+            <script>
+              
+                document.write(teams[0]+": " + goalsScored[0] + "<br>"); 
+                document.write(teams[1]+": " + goalsScored[1] + "<br>");
+                document.write(teams[2]+": " + goalsScored[2] + "<br>"); 
+                document.write(teams[3]+": " + goalsScored[3] + "<br>" );
+                document.write("<hr><br>"); 
+            </script>
+        </li>
+
+        <h3> <b>Goals Difference per Team </b> </h3>
+        <li>
+            <script>
+                
+                document.write(teams[0]+": " + (goalsScored[0] - goalsRecieved[0]) + "<br>"); 
+                document.write(teams[1]+": " + (goalsScored[1] - goalsRecieved[1]) + "<br>");
+                document.write(teams[2]+": " + (goalsScored[2] - goalsRecieved[2]) + "<br>"); 
+                document.write(teams[3]+": " + (goalsScored[3] - goalsRecieved[3]) + "<br>" );
+
+                document.write("<hr><br>");
+            </script>
+    
+        </li>
+
+        <h3> <b>Perfomance per Team </b> </h3>
+        <li>
+            <script>
+                
+                document.write(teams[0]+": " + Number(100 * (gamesWon[0] / (gamesWon[0] + gamesTied[0] + gamesLost[0]))).toFixed(0)  + "%<br>"); 
+                document.write(teams[1]+": " + Number(100 * (gamesWon[1] / (gamesWon[1] + gamesTied[1] + gamesLost[1]))).toFixed(0)  + "%<br>"); 
+                document.write(teams[2]+": " + Number(100 * (gamesWon[2] / (gamesWon[2] + gamesTied[2] + gamesLost[2]))).toFixed(0)  + "%<br>"); 
+                document.write(teams[3]+": " + Number(100 * (gamesWon[3] / (gamesWon[3] + gamesTied[3] + gamesLost[3]))).toFixed(0)  + "%<br>"); 
+                document.write("<hr><br>");
+            </script>
+        </li>
+
+        <h3> <b>Bar Chart - Points Obtained </b> </h3>
+        <li>
+            <script>
+
+                function barchartresults(teams, gamesWon, gamesTied){
+                    for(var i = 0; i < teams.length; i++){
+                        var stars = gamesWon[i] *3 + gamesTied[i] *1; 
+                        document.write("" + teams[i] + ":")
+                        for (var j = 0; j < stars; j++){
+                            document.write("*"); 
+                        }
+                        document.write("</p>");
+                    }
+                    
+                }
+                   barchartresults(teams, gamesWon, gamesTied);
+               
+               
+
+                
+            </script>
+        </li>
+
+        
+
+    </body>
+
+
+
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Corn Yield Predictor</title>
+
+    <style>
+        /* -------- Global -------- */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #111111;
+        }
+
+        /* -------- Layout -------- */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #f9fafb;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        h1 {
+            text-align: center;
+            color: #111111;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #065f46;
+            border-bottom: 2px solid #d1d5db;
+            padding-bottom: 5px;
+        }
+
+        /* -------- Inputs -------- */
+        .field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .field label {
+            font-size: 16px;
+            flex: 1;
+        }
+
+        .field input {
+            width: 180px;
+            padding: 8px 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #9ca3af;
+            background-color: #ffffff;
+            color: #111111;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+        }
+
+        /* -------- Button -------- */
+        .button-wrapper {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 28px;
+            font-size: 18px;
+            font-weight: 600;
+            background-color: #059669;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #047857;
+        }
+
+        /* -------- Result -------- */
+        .result-box {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-left: 5px solid #059669;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+        }
+
+        .result-box input {
+            width: 100%;
+            background: none;
+            border: none;
+            color: #111111;
+            font-size: 16px;
+            outline: none;
+        }
+
+        /* -------- Footer -------- */
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+        }
+    </style>
+
+    <script>
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function evaluateWeeklyRainStress(weeklyRain) {
+            let warnings = [];
+            let penalty = 1.0;
+
+            if (weeklyRain[2] < 1.5) {
+                warnings.push("Pollination stress risk detected");
+                penalty *= 0.85;
+            }
+
+            let dryWeeks = weeklyRain.filter(r => r < 1.0).length;
+            if (dryWeeks >= 2) {
+                warnings.push("Multiple dry weeks detected");
+                penalty *= 0.90;
+            }
+
+            return { penalty, warnings };
+        }
+
+        function predictCornYieldMean(gdd, rain, nitrogen, fertilizer, pesticide) {
+            let yieldIndex =
+                clamp(gdd / 2700, 0, 1) * 0.40 +
+                clamp(rain / 24, 0, 1) * 0.25 +
+                clamp(nitrogen / 180, 0, 1) * 0.20 +
+                clamp(fertilizer / 100, 0, 1) * 0.10 +
+                clamp(pesticide / 100, 0, 1) * 0.05;
+
+            return 200 * clamp(yieldIndex, 0, 1);
+        }
+
+        function processResults() {
+
+            let weeklyRain = [
+                Number(Rain1.value),
+                Number(Rain2.value),
+                Number(Rain3.value),
+                Number(Rain4.value)
+            ];
+
+            let totalRain =
+                weeklyRain.reduce((a, b) => a + b, 0);
+
+            let baseYield = predictCornYieldMean(
+                Number(GDD.value),
+                totalRain,
+                Number(Nitrogen.value),
+                Number(Fertilizer.value),
+                Number(Pesticide.value)
+            );
+
+            let stress = evaluateWeeklyRainStress(weeklyRain);
+            let finalYield = baseYield * stress.penalty;
+
+            let message = "Predicted yield: " +
+                finalYield.toFixed(1) + " bu/ac";
+
+            if (stress.warnings.length > 0) {
+                message += " | Warnings: " +
+                    stress.warnings.join(", ");
+            }
+
+            result.value = message;
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Corn Yield Predictor</h1>
+
+        <h2>Season Inputs</h2>
+
+        <div class="field">
+            <label>Growing Degree Days (GDD)</label>
+            <input id="GDD">
+        </div>
+
+        <div class="field">
+            <label>Nitrogen (lb/ac)</label>
+            <input id="Nitrogen">
+        </div>
+
+        <div class="field">
+            <label>Fertilizer Score (0–100)</label>
+            <input id="Fertilizer">
+        </div>
+
+        <div class="field">
+            <label>Pesticide Score (0–100)</label>
+            <input id="Pesticide">
+        </div>
+
+        <h2>Weekly Rainfall (inches)</h2>
+
+        <div class="field">
+            <label>Week 1 – Early Growth</label>
+            <input id="Rain1">
+        </div>
+
+        <div class="field">
+            <label>Week 2 – Vegetative</label>
+            <input id="Rain2">
+        </div>
+
+        <div class="field">
+            <label>Week 3 – Pollination</label>
+            <input id="Rain3">
+        </div>
+
+        <div class="field">
+            <label>Week 4 – Grain Fill</label>
+            <input id="Rain4">
+        </div>
+
+        <div class="button-wrapper">
+            <button onclick="processResults()">Predict Yield</button>
+        </div>
+
+        <div class="result-box">
+            <input id="result" readonly>
+        </div>
+
+        <div class="footer">
+            Experimental agronomic decision-support model
+        </div>
+
+    </div>
+
+</body>
+</html>
